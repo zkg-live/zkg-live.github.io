@@ -2,14 +2,89 @@
 <html>
 <head>
   <title>ZKG Live</title>
+  <meta charset="UTF-8">
+  <style>
+    body{
+      font-family: Arial, sans-serif;
+      background:#f9f9f9;
+    }
+    .video-card{
+      background:#fff;
+      padding:15px;
+      margin-bottom:25px;
+      border-radius:8px;
+      box-shadow:0 2px 8px rgba(0,0,0,0.1);
+      max-width:400px;
+    }
+    video{
+      width:100%;
+      border-radius:6px;
+      margin-top:10px;
+    }
+    .tags{
+      color:#666;
+      font-size:13px;
+    }
+  </style>
 </head>
+
 <body>
 
-<h2>ZKG Live Video</h2>
+<h2>🔥 All Videos</h2>
+<div id="videos"></div>
 
-<video width="360" controls>
-  <source src="https://res.cloudinary.com/djuqovyjt/video/upload/v1769766107/WhatsApp_Video_2024-04-24_at_12.16.31_9f27bd85_gpc9sy.mp4" type="video/mp4">
-</video>
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<script>
+/* Firebase Config */
+const firebaseConfig = {
+  apiKey: "AIzaSyCKqRPWM-3C5N-mPAN1lMf_m9CedLIfVSQ",
+  authDomain: "zkg-live.firebaseapp.com",
+  projectId: "zkg-live",
+  storageBucket: "zkg-live.appspot.com",
+  messagingSenderId: "1013280789722",
+  appId: "1:1013280789722:web:8a561f796c6fda205b01e3"
+};
+
+/* Init Firebase */
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+/* Fetch Videos */
+db.collection("videos")
+  .orderBy("time","desc")
+  .onSnapshot(snapshot => {
+
+    const videosDiv = document.getElementById("videos");
+    videosDiv.innerHTML = "";
+
+    snapshot.forEach(doc => {
+      const data = doc.data();
+
+      videosDiv.innerHTML += `
+        <div class="video-card">
+
+          <h3>${data.title || "No Title"}</h3>
+          <p>${data.description || ""}</p>
+
+          <a href="watch.html?id=${doc.id}">
+            <video muted>
+              <source src="${data.url}" type="video/mp4">
+            </video>
+          </a>
+
+          <p class="tags">
+            ${data.tags ? "🏷️ " + data.tags : ""}
+          </p>
+
+        </div>
+      `;
+    });
+
+  });
+</script>
 
 </body>
 </html>
