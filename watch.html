@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Watch Video</title>
+</head>
+<body>
+
+<video id="video" controls width="500"></video>
+
+<br><br>
+<button onclick="likeVideo()">👍 Like</button>
+<span id="likeCount">0</span> Likes
+
+<hr>
+
+<h3>Comments</h3>
+<div id="comments"></div>
+
+<br>
+<input type="text" id="commentText" placeholder="Write comment">
+<button onclick="addComment()">Comment</button>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "zkg-live.firebaseapp.com",
+  projectId: "zkg-live",
+  appId: "XXXX"
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+const params = new URLSearchParams(window.location.search);
+const videoId = params.get("id");
+
+const videoRef = db.collection("videos").doc(videoId);
+
+// 🔹 Load video + likes
+videoRef.onSnapshot(doc => {
+  const data = doc.data();
+  document.getElementById("video").src = data.url;
+  document.getElementById("likeCount").innerText = data.likes || 0;
+});
+
+// 👍 LIKE
+function likeVideo(){
+  auth.onAuthStateChanged(user => {
+    if(!user){
+      alert("Login required");
+      return;
+    }
+    videoRef.update({
+      likes: firebase.firestore.FieldValue.increment(1)
+    });
+  });
+}
+
+// 💬 LOAD COMMENTS
+videoRef.collection("comments").orderBy("time","desc")
+.onSnapshot(snapshot => {
+  document.getElementById("comments").innerHTML = "";
+  snapshot.forEach(doc => {
+    const c = doc.data();
+    document.getElementById("comments").innerHTML += `
+      <p><b>${c.user}</b>: ${c.text}</p>
+    `;
+  });
+});
+
+// ➕ ADD COMMENT
+function addComment(){
+  auth.onAuthStateChanged(user => {
+    if(!user){
+      alert("Login required");
+      return;
+    }
+
+    const text = document.getElementById("commentText").value;
+    if(text === "") return;
+
+    videoRef.collection("comments").add({
+      text: text,
+      user: user.email,
+      time: Date.now()
+    });
+
+    document.getElementById("commentText").value = "";
+  });
+}
+</script>
+
+</body>
+</html>
