@@ -12,25 +12,19 @@
 <video id="preview" width="320" controls style="display:none;"></video>
 <br><br>
 
-<!-- Title -->
-<input type="text" id="title" placeholder="Video Title">
-<br><br>
+<input type="text" id="title" placeholder="Video Title"><br><br>
 
-<!-- Description -->
-<textarea id="description" placeholder="Video Description" rows="4" cols="40"></textarea>
-<br><br>
+<textarea id="description" placeholder="Video Description" rows="4" cols="40"></textarea><br><br>
 
-<!-- Tags -->
-<input type="text" id="tags" placeholder="Tags (comma separated)">
-<br><br>
+<input type="text" id="tags" placeholder="Tags (comma separated)"><br><br>
 
-<!-- Video File -->
-<input type="file" id="videoFile" accept="video/*">
-<br><br>
+<input type="file" id="videoFile" accept="video/*"><br><br>
 
 <button onclick="uploadVideo()">Upload</button>
 
 <p id="status"></p>
+<progress id="progressBar" value="0" max="100" style="width:300px; display:none;"></progress>
+<p id="percent"></p>
 
 <!-- Firebase SDKs -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -38,7 +32,6 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
 
 <script>
-/* Firebase Config */
 const firebaseConfig = {
   apiKey: "AIzaSyCKqRPWM-3C5N-mPAN1lMf_m9CedLIfVSQ",
   authDomain: "zkg-live.firebaseapp.com",
@@ -47,13 +40,12 @@ const firebaseConfig = {
   appId: "1:1013280789722:web:8a561f796c6fda205b01e3"
 };
 
-/* Initialize Firebase */
 firebase.initializeApp(firebaseConfig);
 
 const db = firebase.firestore();
 const storage = firebase.storage();
 
-/* Video Preview */
+/* Preview */
 document.getElementById("videoFile").addEventListener("change", function () {
   const file = this.files[0];
   if (file) {
@@ -63,7 +55,6 @@ document.getElementById("videoFile").addEventListener("change", function () {
   }
 });
 
-/* Upload Function */
 function uploadVideo() {
   const title = document.getElementById("title").value;
   const description = document.getElementById("description").value;
@@ -75,28 +66,40 @@ function uploadVideo() {
     return;
   }
 
-  document.getElementById("status").innerText = "Uploading...";
+  const progressBar = document.getElementById("progressBar");
+  const percentText = document.getElementById("percent");
+
+  progressBar.style.display = "block";
+  progressBar.value = 0;
+  percentText.innerText = "0%";
 
   const ref = storage.ref("videos/" + Date.now() + "_" + file.name);
+  const uploadTask = ref.put(file);
 
-  ref.put(file)
-    .then(() => ref.getDownloadURL())
-    .then(url => {
-      return db.collection("videos").add({
-        title: title,
-        description: description,
-        tags: tags,
-        url: url,
-        time: firebase.firestore.FieldValue.serverTimestamp()
-      });
-    })
-    .then(() => {
-      document.getElementById("status").innerText = "✅ Video Uploaded Successfully!";
-    })
-    .catch(error => {
+  uploadTask.on("state_changed",
+    snapshot => {
+      const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+      progressBar.value = progress;
+      percentText.innerText = Math.floor(progress) + "% uploaded";
+    },
+    error => {
       document.getElementById("status").innerText = "❌ ERROR: " + error.message;
-      console.error(error);
-    });
+    },
+    () => {
+      uploadTask.snapshot.ref.getDownloadURL().then(url => {
+        return db.collection("videos").add({
+          title,
+          description,
+          tags,
+          url,
+          time: firebase.firestore.FieldValue.serverTimestamp()
+        });
+      }).then(() => {
+        document.getElementById("status").innerText = "✅ Video Uploaded Successfully!";
+        percentText.innerText = "100% Completed 🎉";
+      });
+    }
+  );
 }
 </script>
 
