@@ -9,11 +9,7 @@
 <h2>All Videos</h2>
 <div id="videos"></div>
 
-<!-- Firebase core -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-
-<!-- Firebase services -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
 <script>
@@ -26,17 +22,8 @@ const firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
-
-// 🔐 LOGIN CHECK (YAHI ADD HUA)
-firebase.auth().onAuthStateChanged(user => {
-  if (!user) {
-    window.location.href = "login.html";
-  }
-});
-
 const db = firebase.firestore();
 
-// 🎥 VIDEOS LOAD
 db.collection("videos").orderBy("time","desc").onSnapshot(snapshot => {
   document.getElementById("videos").innerHTML = "";
   snapshot.forEach(doc => {
