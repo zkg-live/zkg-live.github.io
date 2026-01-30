@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Upload Video</title>
+</head>
+<body>
+
+<h2>Upload Video</h2>
+
+<input type="file" id="videoFile" accept="video/*">
+<button onclick="uploadVideo()">Upload</button>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "zkg-live.firebaseapp.com",
+  projectId: "zkg-live",
+  storageBucket: "zkg-live.appspot
