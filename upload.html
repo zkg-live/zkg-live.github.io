@@ -8,9 +8,26 @@
 
 <h2>Upload Video</h2>
 
-<!-- Upload UI -->
+<!-- Video Preview -->
+<video id="preview" width="320" controls style="display:none;"></video>
+<br><br>
+
+<!-- Title -->
+<input type="text" id="title" placeholder="Video Title">
+<br><br>
+
+<!-- Description -->
+<textarea id="description" placeholder="Video Description" rows="4" cols="40"></textarea>
+<br><br>
+
+<!-- Tags -->
+<input type="text" id="tags" placeholder="Tags (comma separated)">
+<br><br>
+
+<!-- Video File -->
 <input type="file" id="videoFile" accept="video/*">
 <br><br>
+
 <button onclick="uploadVideo()">Upload</button>
 
 <p id="status"></p>
@@ -36,12 +53,25 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const storage = firebase.storage();
 
+/* Video Preview */
+document.getElementById("videoFile").addEventListener("change", function () {
+  const file = this.files[0];
+  if (file) {
+    const video = document.getElementById("preview");
+    video.src = URL.createObjectURL(file);
+    video.style.display = "block";
+  }
+});
+
 /* Upload Function */
 function uploadVideo() {
+  const title = document.getElementById("title").value;
+  const description = document.getElementById("description").value;
+  const tags = document.getElementById("tags").value;
   const file = document.getElementById("videoFile").files[0];
 
-  if (!file) {
-    alert("Video select karo");
+  if (!title || !file) {
+    alert("Title aur video zaroori hai");
     return;
   }
 
@@ -53,6 +83,9 @@ function uploadVideo() {
     .then(() => ref.getDownloadURL())
     .then(url => {
       return db.collection("videos").add({
+        title: title,
+        description: description,
+        tags: tags,
         url: url,
         time: firebase.firestore.FieldValue.serverTimestamp()
       });
