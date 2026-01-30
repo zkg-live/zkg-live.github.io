@@ -13,7 +13,6 @@
 <!-- Firebase SDKs -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 
 <script>
 /* 🔥 Firebase Config */
@@ -35,4 +34,34 @@ db.collection("videos")
   .orderBy("time", "desc")
   .onSnapshot(snapshot => {
 
-    document.getElementById("
+    const videosDiv = document.getElementById("videos");
+    videosDiv.innerHTML = ""; // clear old data
+
+    snapshot.forEach(doc => {
+      const data = doc.data();
+
+      const videoHTML = `
+        <div style="margin-bottom:30px; border-bottom:1px solid #ccc; padding-bottom:20px">
+          
+          <h3>${data.title || "No Title"}</h3>
+          <p>${data.description || ""}</p>
+
+          <video width="360" controls>
+            <source src="${data.url}" type="video/mp4">
+          </video>
+
+          <p style="color:gray;font-size:12px">
+            ${data.tags ? "Tags: " + data.tags : ""}
+          </p>
+
+        </div>
+      `;
+
+      videosDiv.innerHTML += videoHTML;
+    });
+
+  });
+</script>
+
+</body>
+</html>
