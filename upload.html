@@ -1,37 +1,4 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Upload Video - ZKG Live</title>
-</head>
-
-<body>
-
-<h2>Upload Video</h2>
-
-<input type="file" id="videoFile" accept="video/*">
-<br><br>
-<button onclick="uploadVideo()">Upload</button>
-
-<p id="status"></p>
-
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
-
 <script>
-const firebaseConfig = {
-  apiKey: "AIzaSyCKqRPWM-3C5N-mPAN1lMf_m9CedLIfVSQ",
-  authDomain: "zkg-live.firebaseapp.com",
-  projectId: "zkg-live",
-  storageBucket: "zkg-live.appspot.com",
-  appId: "1:1013280789722:web:8a561f796c6fda205b01e3"
-};
-
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-const storage = firebase.storage();
-
 function uploadVideo() {
   const file = document.getElementById("videoFile").files[0];
   if (!file) {
@@ -39,19 +6,24 @@ function uploadVideo() {
     return;
   }
 
-  const ref = storage.ref("videos/" + Date.now() + "_" + file.name);
+  document.getElementById("status").innerText = "Uploading...";
 
-  ref.put(file).then(() => {
-    ref.getDownloadURL().then(url => {
-      db.collection("videos").add({
+  const ref = firebase.storage().ref("videos/" + Date.now() + "_" + file.name);
+
+  ref.put(file)
+    .then(() => ref.getDownloadURL())
+    .then(url => {
+      return firebase.firestore().collection("videos").add({
         url: url,
         time: firebase.firestore.FieldValue.serverTimestamp()
       });
+    })
+    .then(() => {
       document.getElementById("status").innerText = "✅ Video Uploaded Successfully!";
+    })
+    .catch(error => {
+      document.getElementById("status").innerText = "❌ ERROR: " + error.message;
+      console.error(error);
     });
-  });
 }
 </script>
-
-</body>
-</html>
