@@ -2,6 +2,7 @@
 <html>
 <head>
   <title>ZKG Live</title>
+  <meta charset="UTF-8">
 </head>
 
 <body>
@@ -9,36 +10,29 @@
 <h2>All Videos</h2>
 <div id="videos"></div>
 
+<!-- Firebase SDKs -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 
 <script>
+/* 🔥 Firebase Config */
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
+  apiKey: "AIzaSyCKqRPWM-3C5N-mPAN1lMf_m9CedLIfVSQ",
   authDomain: "zkg-live.firebaseapp.com",
   projectId: "zkg-live",
   storageBucket: "zkg-live.appspot.com",
-  appId: "XXXX"
+  messagingSenderId: "1013280789722",
+  appId: "1:1013280789722:web:8a561f796c6fda205b01e3"
 };
 
+/* Initialize Firebase */
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-db.collection("videos").orderBy("time","desc").onSnapshot(snapshot => {
-  document.getElementById("videos").innerHTML = "";
+/* 🔥 Fetch videos (public – bina login) */
+db.collection("videos")
+  .orderBy("time", "desc")
+  .onSnapshot(snapshot => {
 
-  snapshot.forEach(doc => {
-    const v = doc.data();
-
-    document.getElementById("videos").innerHTML += `
-      <a href="watch.html?id=${doc.id}">
-        <video src="${v.url}" width="300" controls></video>
-      </a>
-      <br><br>
-    `;
-  });
-});
-</script>
-
-</body>
-</html>
+    document.getElementById("
