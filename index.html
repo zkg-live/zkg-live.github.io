@@ -26,10 +26,15 @@ const db = firebase.firestore();
 
 db.collection("videos").orderBy("time","desc").onSnapshot(snapshot => {
   document.getElementById("videos").innerHTML = "";
+
   snapshot.forEach(doc => {
     const v = doc.data();
+
     document.getElementById("videos").innerHTML += `
-      <video src="${v.url}" controls width="300"></video><br><br>
+      <a href="watch.html?id=${doc.id}">
+        <video src="${v.url}" width="300" controls></video>
+      </a>
+      <br><br>
     `;
   });
 });
