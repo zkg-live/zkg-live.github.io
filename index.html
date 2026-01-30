@@ -2,66 +2,14 @@
 <html>
 <head>
   <title>ZKG Live</title>
-  <meta charset="UTF-8">
 </head>
-
 <body>
 
-<h2>All Videos</h2>
-<div id="videos"></div>
+<h2>ZKG Live Video</h2>
 
-<!-- Firebase SDKs -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-
-<script>
-/* 🔥 Firebase Config */
-const firebaseConfig = {
-  apiKey: "AIzaSyCKqRPWM-3C5N-mPAN1lMf_m9CedLIfVSQ",
-  authDomain: "zkg-live.firebaseapp.com",
-  projectId: "zkg-live",
-  storageBucket: "zkg-live.appspot.com",
-  messagingSenderId: "1013280789722",
-  appId: "1:1013280789722:web:8a561f796c6fda205b01e3"
-};
-
-/* Initialize Firebase */
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-
-/* 🔥 Fetch videos (public – bina login) */
-db.collection("videos")
-  .orderBy("time", "desc")
-  .onSnapshot(snapshot => {
-
-    const videosDiv = document.getElementById("videos");
-    videosDiv.innerHTML = ""; // clear old data
-
-    snapshot.forEach(doc => {
-      const data = doc.data();
-
-      const videoHTML = `
-        <div style="margin-bottom:30px; border-bottom:1px solid #ccc; padding-bottom:20px">
-          
-          <h3>${data.title || "No Title"}</h3>
-          <p>${data.description || ""}</p>
-
-          <video width="360" controls>
-            <source src="${data.url}" type="video/mp4">
-          </video>
-
-          <p style="color:gray;font-size:12px">
-            ${data.tags ? "Tags: " + data.tags : ""}
-          </p>
-
-        </div>
-      `;
-
-      videosDiv.innerHTML += videoHTML;
-    });
-
-  });
-</script>
+<video width="360" controls>
+  <source src="https://res.cloudinary.com/djuqovyjt/video/upload/v1769766107/WhatsApp_Video_2024-04-24_at_12.16.31_9f27bd85_gpc9sy.mp4" type="video/mp4">
+</video>
 
 </body>
 </html>
