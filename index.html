@@ -1,58 +1,39 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <!-- Firebase App -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-
-<!-- Firestore -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-
-<script>
-  const firebaseConfig = {
-    apiKey: "TUMHARI_API_KEY",
-    authDomain: "zkg-live.firebaseapp.com",
-    projectId: "zkg-live",
-    storageBucket: "zkg-live.appspot.com",
-    messagingSenderId: "XXXX",
-    appId: "XXXX"
-  };
-
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
-</script>
-
-</body>
-</html>
-
-  <title>ZKG Live Streaming</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-    body { background:#000; color:#fff; text-align:center; font-family:Arial; }
-    .btn {
-      display:inline-block;
-      padding:15px 30px;
-      background:red;
-      color:white;
-      text-decoration:none;
-      font-size:20px;
-      border-radius:8px;
-      margin-top:20px;
-    }
-    video { width:100%; max-width:700px; margin-top:20px; }
-  </style>
+  <title>ZKG Live</title>
 </head>
 
 <body>
 
-<h1>🔴 ZKG Live Stream</h1>
+<h2>All Videos</h2>
+<div id="videos"></div>
 
-<a class="btn" href="YOUR_ADSTERRA_DIRECT_LINK" target="_blank">
-▶ Watch Live
-</a>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
-<video controls autoplay>
-  <source src="YOUR_VIDEO_LINK.mp4" type="video/mp4">
-</video>
+<script>
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "zkg-live.firebaseapp.com",
+  projectId: "zkg-live",
+  storageBucket: "zkg-live.appspot.com",
+  appId: "XXXX"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+db.collection("videos").orderBy("time","desc").onSnapshot(snapshot => {
+  document.getElementById("videos").innerHTML = "";
+  snapshot.forEach(doc => {
+    const v = doc.data();
+    document.getElementById("videos").innerHTML += `
+      <video src="${v.url}" controls width="300"></video><br><br>
+    `;
+  });
+});
+</script>
 
 </body>
 </html>
